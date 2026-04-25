@@ -26,8 +26,8 @@ public class LojaDAO {
         }
     }
 
-    public List<Produtos> listar() {
-        List<Produtos> produtos = new ArrayList<>();
+    public List<Produto> listar() {
+        List<Produto> produtos = new ArrayList<>();
 
         String sql = "SELECT * FROM produtos";
 
@@ -37,7 +37,7 @@ public class LojaDAO {
 
             while (resultSet.next()) {
                 produtos.add(
-                        new Produtos(
+                        new Produto(
                                 resultSet.getInt("id_produto"),
                                 resultSet.getString("nome_produto"),
                                 resultSet.getDouble("preco_produto")
@@ -51,6 +51,59 @@ public class LojaDAO {
 
         return produtos;
     }
+
+    public Produto buscaPorId(int id) {
+        String sql = "SELECT * FROM produtos WHERE id_produto = ?";
+        Produto produto = new Produto();
+
+        try (Connection connection = Conexao.conectar();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if(resultSet.next()) {
+                produto.setIdProduto(resultSet.getInt("id_produto"));
+                produto.setNomeProduto(resultSet.getString("nome_produto"));
+                produto.setPrecoProduto(resultSet.getDouble("preco_produto"));
+            }
+
+            return produto;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<Produto> buscarPorNome(String nome) {
+        String sql = "SELECT * FROM produtos WHERE LOWER(nome_produto) LIKE LOWER(?)";
+        List<Produto> produtos = new ArrayList<>();
+
+        try (Connection connection = Conexao.conectar();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setString(1, "%" + nome + "%");
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                produtos.add(
+                        new Produto(
+                                resultSet.getInt("id_produto"),
+                                resultSet.getString("nome_produto"),
+                                resultSet.getDouble("preco_produto")
+                        )
+                );
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return produtos;
+    }
+
+
+
 
     public void atualizarNomeProduto(int id, String nome) {
         String sql = "UPDATE produtos SET nome_produto = ? WHERE id_produto = ?";
@@ -67,7 +120,10 @@ public class LojaDAO {
         }
     }
 
-    public void atualizarPrecoProduto(int id, double preco) {
+    public void atualizarPrecoProduto(int id, double preco) throws IllegalAccessException {
+        if(preco < 0)
+            throw new IllegalAccessException("preço não pode ser menor que zero");
+
         String sql = "UPDATE produtos SET preco_produto = ? WHERE id_produto = ?";
 
         try (Connection connection = Conexao.conectar();
