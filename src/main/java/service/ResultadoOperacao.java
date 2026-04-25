@@ -1,6 +1,6 @@
 package service;
 
-public enum ResutadoOperacao {
+public enum ResultadoOperacao {
     SUCESSO(0),
     ERRO_NOME(-1),
     PRECO_INVALIDO(-2),
@@ -8,7 +8,7 @@ public enum ResutadoOperacao {
 
     private int erro;
 
-    ResutadoOperacao(int erro) {
+    ResultadoOperacao(int erro) {
         this.erro = erro;
     }
 
@@ -16,7 +16,7 @@ public enum ResutadoOperacao {
         return erro;
     }
 
-    public static String mensagem(ResutadoOperacao resutadoOperacao) {
+    public static String mensagem(ResultadoOperacao resutadoOperacao) {
         switch (resutadoOperacao) {
             case SUCESSO -> {
                 return "\n\n(Ação feita com sucesso)\n\n";

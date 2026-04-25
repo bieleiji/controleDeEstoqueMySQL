@@ -3,7 +3,7 @@ package ui;
 import bd.LojaDAO;
 import model.Produto;
 import service.BDService;
-import service.ResutadoOperacao;
+import service.ResultadoOperacao;
 
 import java.util.List;
 import java.util.Scanner;
@@ -55,31 +55,42 @@ public class Menu {
     }
 
     public static void cadastrar() {
-        ResutadoOperacao resutadoOperacao;
+        ResultadoOperacao resutadoOperacao;
+        String nome;
+        double preco = 0;
+        int estoque = 0;
 
         do {
             aviso();
 
             System.out.print("Digite o nome do produto: ");
-            String nome = scanner.nextLine();
+            nome = scanner.nextLine();
             if(nome.isBlank()) break;
 
-            double preco;
-            System.out.print("Digite o preco do produto: ");
-            String precoString = scanner.nextLine();
-            if(precoString.isBlank()) break;
-            else preco = Double.parseDouble(precoString);
+            do {
+                System.out.print("Digite o preco do produto: ");
+                String precoString = scanner.nextLine();
+                if (precoString.isBlank()) break;
+                else preco = Double.parseDouble(precoString);
 
-            int estoque;
-            System.out.print("Digite a quantidade no estoque: ");
-            String estoqueString = scanner.nextLine();
-            if(estoqueString.isBlank()) break;
-            else estoque = Integer.parseInt(estoqueString);
+                if(!BDService.precoEhVerificado(preco))
+                    System.out.println(ResultadoOperacao.mensagem(ResultadoOperacao.PRECO_INVALIDO));
+            } while (!BDService.precoEhVerificado(preco));
+
+            do {
+                System.out.print("Digite a quantidade no estoque: ");
+                String estoqueString = scanner.nextLine();
+                if (estoqueString.isBlank()) break;
+                else estoque = Integer.parseInt(estoqueString);
+
+                if(!BDService.estoqueEhVerificado(estoque))
+                    System.out.println(ResultadoOperacao.mensagem(ResultadoOperacao.ESTOQUE_INVALIDO));
+            } while (!BDService.estoqueEhVerificado(estoque));
 
             resutadoOperacao = BDService.cadastrar(nome, preco, estoque);
-            System.out.println(ResutadoOperacao.mensagem(resutadoOperacao));
+            System.out.println(ResultadoOperacao.mensagem(resutadoOperacao));
             espera();
-        } while (resutadoOperacao != ResutadoOperacao.SUCESSO);
+        } while (resutadoOperacao != ResultadoOperacao.SUCESSO);
 
     }
 
@@ -241,8 +252,8 @@ public class Menu {
             if(precoString.isBlank()) return;
             else preco = Double.parseDouble(precoString);
 
-            if(preco < 0)
-                System.out.println(ResutadoOperacao.mensagem(ResutadoOperacao.PRECO_INVALIDO));
+            if(!BDService.precoEhVerificado(preco))
+                System.out.println(ResultadoOperacao.mensagem(ResultadoOperacao.PRECO_INVALIDO));
             else break;
         }
 
@@ -289,8 +300,8 @@ public class Menu {
             if(estoqueString.isBlank()) return;
             else estoque = Integer.parseInt(estoqueString);
 
-            if(estoque < 0)
-                System.out.println(ResutadoOperacao.mensagem(ResutadoOperacao.ESTOQUE_INVALIDO));
+            if(!BDService.estoqueEhVerificado(estoque))
+                System.out.println(ResultadoOperacao.mensagem(ResultadoOperacao.ESTOQUE_INVALIDO));
             else break;
         }
 
@@ -309,8 +320,8 @@ public class Menu {
             if(estoqueString.isBlank()) return;
             else estoque = Integer.parseInt(estoqueString);
 
-            if(estoque < 0)
-                System.out.println(ResutadoOperacao.mensagem(ResutadoOperacao.ESTOQUE_INVALIDO));
+            if(!BDService.estoqueEhVerificado(estoque))
+                System.out.println(ResultadoOperacao.mensagem(ResultadoOperacao.ESTOQUE_INVALIDO));
             else {
                 String erro = LojaDAO.atualizarEstoque(produto.getIdProduto(), estoque * -1);
                 if(erro == null) break;
