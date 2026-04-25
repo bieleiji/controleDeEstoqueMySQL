@@ -4,13 +4,29 @@ import bd.LojaDAO;
 
 public class BDService {
 
-    public static ResutadoOperacao cadastrar(String nome, double preco, int estoque) {
-        if(nome.isBlank()) return ResutadoOperacao.ERRO_NOME;
-        else if(preco < 0) return ResutadoOperacao.PRECO_INVALIDO;
-        else if(estoque < 0) return ResutadoOperacao.ESTOQUE_INVALIDO;
+    public static boolean nomeEhVerificado(String nome) {
+        return !nome.isBlank();
+    }
+
+    public static boolean precoEhVerificado(double preco) {
+        return preco >= 0;
+    }
+
+    public static boolean estoqueEhVerificado(int estoque) {
+        return estoque >= 0;
+    }
+
+    public static ResultadoOperacao cadastrar(String nome, double preco, int estoque) {
+        boolean nomeVerificado = nomeEhVerificado(nome);
+        boolean precoVerificado = precoEhVerificado(preco);
+        boolean estoqueVerificado = estoqueEhVerificado(estoque);
+
+             if(!nomeVerificado)    return ResultadoOperacao.ERRO_NOME;
+        else if(!precoVerificado)   return ResultadoOperacao.PRECO_INVALIDO;
+        else if(!estoqueVerificado) return ResultadoOperacao.ESTOQUE_INVALIDO;
         else {
             LojaDAO.inserir(nome,preco,estoque);
-            return ResutadoOperacao.SUCESSO;
+            return ResultadoOperacao.SUCESSO;
         }
     }
 }
