@@ -16,7 +16,7 @@ Sistema desenvolvido em Java para gerenciamento de produtos com controle de esto
 ## Regras de negócio
 1. Não permite estoque negativo
 2. Valida existência do produto antes de operações
-3 Controle de entrada e saída de produtos
+3. Controle de entrada e saída de produtos
 
 ## Tecnologias utilizadas
 * Java
